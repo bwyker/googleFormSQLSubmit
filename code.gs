@@ -29,6 +29,10 @@ function onFormSubmti(e) {
     var response = itemResponse.getResponse(); // get the response to the item and assign it to a var for the response
     var answer = Array.isArray(response) ? response.join(",") : response;  // if the response is an array, make a string that is comma separated, otherwise just keep the respose as is and assign to a new var (answer)
 
+    /* need to add to answer option if datetime or time variable. If datetime (like WHEN variable), I think it needs to be converted
+    to java.sql.timestamp per these instrcurtions: http://stackoverflow.com/questions/18614836/using-setdate-in-preparedstatement */
+
+
     valuesByTitle[title] = answer; // add to title and response to the empty object, like this: [ NAME: "Yoga For Cats", LEVEL: "BEGINNER,ADVANCED"]
   }
     var columns = Object.keys(valuesByTitle); // creates a var that is the column name like [ "NAME", "LEVEL" ]
@@ -50,14 +54,13 @@ function onFormSubmti(e) {
 
            var setopt = "setInt";
 
-         } else {
+         } else { // actually might be datetime (WHICH) or time (LENGTH). May have to change LENGTH to numeric (e.g. 1, 1.5, 2, etc, as in hours)
 
            var setopt = "setTimeStamp";
-           valuesByTitle[columns[i]] = java.sql.Timestamp.valueOf(valuesByTitle[columns[i]]);
 
          }
 
-      stmt[setopt](i+1, valuesByTitle[columns[i]]);
+      stmt[setopt](i+1, valuesByTitle[columns[i]]); // this will not work with datetime. I think it first needs to be converted to java.sql.timestamp above
 
     }
 
